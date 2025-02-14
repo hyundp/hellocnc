@@ -1,21 +1,17 @@
 import streamlit as st
 from sqlalchemy import create_engine, Column, Integer, String, Text
 from sqlalchemy.orm import declarative_base, sessionmaker
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
+from datetime import datetime
 
 # DB 연결 설정
-engine = create_engine('sqlite:///user_preferences.db')
-Base = declarative_base()
+uri = "mongodb+srv://cnc1:MiEK12CiftoaYXF3@cnc1.f0c02.mongodb.net/?retryWrites=true&w=majority&appName=cnc1"
+client = MongoClient(uri, server_api=ServerApi('1'))
+db = client.estimation_platform
+collection = db.user_preferences
 
 # 데이터 모델 정의
-class UserPreference(Base):
-    __tablename__ = 'preferences'
-    id = Column(Integer, primary_key=True)
-    name = Column(String(50), nullable=False)
-    external = Column(Text, nullable=False)
-    internal = Column(Text, nullable=False)
-
-Base.metadata.create_all(engine)
-Session = sessionmaker(bind=engine)
 
 # UI 구성
 st.title("🔍 차세대 인력추정 플랫폼")
@@ -44,15 +40,17 @@ with st.form("preference_form"):
             st.warning("각 항목을 10자 이상 작성해주세요")
         else:
             try:
-                session = Session()
-                new_entry = UserPreference(
-                    name=name.strip(),
-                    external=external.strip(),
-                    internal=internal.strip()
-                )
-                session.add(new_entry)
-                session.commit()
-                st.success("✅ 성공적으로 저장되었습니다!")
-                st.balloons()
+                profile = {
+                    "name": name.strip(),
+                    "external": external.strip(),
+                    "internal": internal.strip(),
+                    "created_at": datetime.now()
+                }
+                result = collection.insert_one(profile)
+                if result.inserted_id:
+                    st.success("✅ 성공적으로 저장되었습니다!")
+                    st.balloons()
+                else:
+                    st.error("저장에 실패했습니다.")
             except Exception as e:
-                st.error(f"저장 오류: {str(e)}")
+                st.error(f"데이터베이스 오류: {str(e)}")
