@@ -4,7 +4,7 @@ from pymongo.server_api import ServerApi
 from datetime import datetime
 
 # DB 연결 설정
-uri = "mongodb+srv://cnc1:MiEK12CiftoaYXF3@cnc1.f0c02.mongodb.net/?retryWrites=true&w=majority&appName=cnc1&tlsAllowInvalidCertificates=true"
+uri = "mongodb+srv://cnc1:MiEK12CiftoaYXF3@cnc1.f0c02.mongodb.net/?retryWrites=true&w=majority&appName=cnc1"
 client = MongoClient(uri)
 db = client.estimation_platform
 collection = db.user_preferences
