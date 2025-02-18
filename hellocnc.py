@@ -4,8 +4,8 @@ from pymongo.server_api import ServerApi
 from datetime import datetime
 
 # DB 연결 설정
-uri = "mongodb+srv://cnc1:MiEK12CiftoaYXF3@cnc1.f0c02.mongodb.net/?retryWrites=true&w=majority&appName=cnc1"
-client = MongoClient(uri, server_api=ServerApi('1'))
+uri = "mongodb+srv://cnc1:MiEK12CiftoaYXF3@cnc1.f0c02.mongodb.net/?retryWrites=true&w=majority&appName=cnc1&tlsAllowInvalidCertificates=true"
+client = MongoClient(uri)
 db = client.estimation_platform
 collection = db.user_preferences
 
@@ -15,10 +15,11 @@ collection = db.user_preferences
 st.title("🔍 차세대 인력추정 플랫폼")
 with st.form("preference_form"):
     col1, col2 = st.columns(2)
+    coltemp = st.columns(2)
     
     with col1:
         name = st.text_input("이름을 입력하세요", placeholder="홍길동")
-        
+
     with col2:
         st.markdown("### 📝 작성 가이드")
         st.caption("- 외적: 키/체형/스타일 등")
@@ -34,7 +35,7 @@ with st.form("preference_form"):
     if submitted:
         if len(name) == 0:
             st.error("이름을 반드시 입력해주세요")
-        elif len(external) < 10 or len(internal) < 10:
+        elif len(external) < 1 or len(internal) < 1:
             st.warning("각 항목을 10자 이상 작성해주세요")
         else:
             try:
